@@ -95,7 +95,7 @@ def parse_observations(text):
             obs_elem = []
         else:
             line = str(line)
-            line = re.findall(r"[\w'^]+|[.,!?;-]", re.sub("'", '^', line))
+            line = re.findall(r"[\w'^-]+|[.,!?;]", re.sub("'", '^', line))
 
             for word in line:
                 word = re.sub("'", '', word)
