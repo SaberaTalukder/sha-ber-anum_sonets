@@ -81,28 +81,35 @@ def states_to_wordclouds(hmm, obs_map, max_words=50, show=True):
 
 def parse_observations(text):
     # Convert text to dataset.
-    lines = [line.split() for line in text.split('\n') if line.split()]
+    lines = [line for line in text.split('\n') if line.split()]
 
     obs_counter = 0
     obs = []
     obs_map = {}
+    obs_elem = []
 
     for line in lines:
-        obs_elem = []
-        line = re.findall(r"[\w'^]+|'[.,!?;-]", re.sub("'", '^', text))
+        if len(line.split()) == 1:
+            if len(obs_elem) > 0:
+                obs.append(obs_elem)
+            obs_elem = []
+        else:
+            line = str(line)
+            line = re.findall(r"[\w'^]+|[.,!?;-]", re.sub("'", '^', line))
+
+            for word in line:
+                word = re.sub("'", '', word)
+                word = word.lower()
+                if word not in obs_map:
+                    # Add unique words to the observations map.
+                    obs_map[word] = obs_counter
+                    obs_counter += 1
+
+                # Add the encoded word.
+                obs_elem.append(obs_map[word])
         
-        for word in line:
-            word = re.sub("'", '', word)
-            word = word.lower()
-            if word not in obs_map:
-                # Add unique words to the observations map.
-                obs_map[word] = obs_counter
-                obs_counter += 1
-            
-            # Add the encoded word.
-            obs_elem.append(obs_map[word])
-        
-        # Add the encoded sequence.
+    # Add the encoded sequence.
+    if len(obs_elem) > 0:
         obs.append(obs_elem)
 
     return obs, obs_map
