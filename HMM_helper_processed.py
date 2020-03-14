@@ -79,12 +79,6 @@ def states_to_wordclouds(hmm, obs_map, max_words=50, show=True):
 # HMM FUNCTIONS
 ####################
 
-def parse_observations(sonnets, poem3="", poem4=""):
-    obs, obs_map = parse_observations_sonnets(sonnets)
-    obs2, obs_map2 = parse_observations_poem(poem3, obs, obs_map)
-    obs3, obs_map3 = parse_observations_poem(poem4, obs2, obs_map2)
-    return obs3, obs_map3
-
 def parse_observations_sonnets(text, obs=[], obs_map={}):
     # Convert text to dataset.
     lines = [line for line in text.split('\n') if line.split()]
@@ -145,6 +139,51 @@ def parse_observations_poem(text, obs=[], obs_map={}):
         obs.append(obs_elem)
 
     return obs, obs_map
+
+def parse_observations_stanza(text, obs=[], obs_map={}):
+    # Convert text to dataset.
+    lines = [line for line in text.split('\n') if line.split()]
+
+    obs_counter = len(obs_map)
+    obs_elem = []
+
+    for ln, line in enumerate(lines):
+        if ln % 14 == 0:
+            if len(obs_elem) > 0:
+                obs.append(obs_elem)
+            obs_elem = []
+            
+        line = str(line)
+        line = re.findall(r"[\w'^]+|[.,!?;-]", re.sub("'", '^', line))
+
+        for word in line:
+            word = re.sub("'", '', word)
+            word = word.lower()
+            if word not in obs_map:
+                # Add unique words to the observations map.
+                obs_map[word] = obs_counter
+                obs_counter += 1
+
+            # Add the encoded word.
+            obs_elem.append(obs_map[word])
+        
+    # Add the encoded sequence.
+    if len(obs_elem) > 0:
+        obs.append(obs_elem)
+
+    return obs, obs_map
+
+def parse_observations(sonnets, poem3="", poem4=""):
+    obs, obs_map = parse_observations_sonnets(sonnets)
+    obs2, obs_map2 = parse_observations_poem(poem3, obs, obs_map)
+    obs3, obs_map3 = parse_observations_poem(poem4, obs2, obs_map2)
+    return obs3, obs_map3
+
+def parse_observations2(sonnets, poem3="", poem4=""):
+    obs, obs_map = parse_observations_sonnets(sonnets)
+    obs2, obs_map2 = parse_observations_stanza(poem3, obs, obs_map)
+    obs3, obs_map3 = parse_observations_stanza(poem4, obs2, obs_map2)
+    return obs3, obs_map3
 
 def obs_map_reverser(obs_map):
     obs_map_r = {}
