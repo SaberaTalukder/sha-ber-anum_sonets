@@ -173,11 +173,47 @@ def parse_observations_poem(text, obs=[], obs_map={}):
 
     return obs, obs_map
 
-def parse_observations(sonnets, sonnets2="", poem3="", poem4=""):
+def parse_observations_lyrics(text, obs=[], obs_map={}):
+    # Convert text to dataset.
+    text = re.sub(r'(?<!\w)([A-Z])\.', r'\1', text) # remove dots in acronyms
+    lines = [line for line in text.split('\r\n')]
+
+    obs_counter = len(obs_map)
+    obs_elem = []
+
+    for line in lines:
+        if len(line.split()) < 1:
+            if len(obs_elem) > 0:
+                obs.append(obs_elem)
+            obs_elem = []
+        else:
+            line = str(line)
+#             line = re.sub("[\(\[].*?[\)\]]", "", line)
+            line = re.findall(r"[\w'^-]+|[.,!?;]", re.sub("'", '^', line))
+
+            for word in line:
+                word = re.sub("'", '', word)
+                word = word.lower()
+                if word not in obs_map:
+                    # Add unique words to the observations map.
+                    obs_map[word] = obs_counter
+                    obs_counter += 1
+
+                # Add the encoded word.
+                obs_elem.append(obs_map[word])
+        
+    # Add the encoded sequence.
+    if len(obs_elem) > 0:
+        obs.append(obs_elem)
+
+    return obs, obs_map
+
+def parse_observations(sonnets, sonnets2="", poem3="", poem4="", lyrics=""):
     obs, obs_map = parse_observations_sonnets(sonnets, [], {})
     obs, obs_map = parse_observations_sonnets(sonnets2, obs, obs_map)
     obs, obs_map = parse_observations_stanza(poem3, obs, obs_map)
     obs, obs_map = parse_observations_stanza(poem4, obs, obs_map)
+    obs, obs_map = parse_observations_lyrics(lyrics, obs, obs_map)
     return obs, obs_map
 
 def print_words(obs, obs_map):
