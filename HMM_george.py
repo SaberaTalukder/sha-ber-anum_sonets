@@ -351,6 +351,9 @@ class HiddenMarkovModel:
 
             self.A = A_num / A_den
             self.O = O_num / O_den
+
+            if iteration % 100 == 0:
+                print('On iteration number: ', iteration)
         self.A = self.A.tolist()
         self.O = self.O.tolist()
 
