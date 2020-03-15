@@ -413,18 +413,18 @@ class HiddenMarkovModel:
 
             states:     The randomly generated states as a list.
         '''
-        print('hey')
         emission = []
         states = []
         A = np.array(self.A)
         O = np.array(self.O)
-        print(rhyme)
-        print(type(O[:, rhyme]))
-        y = np.random.choice(range(self.L), O[:, rhyme])
-        x = rhyme
-        for t in range(1, M):
-            y = np.random.choice(range(self.L), p=A[states[t-1]])
-            x = np.random.choice(range(self.D), p=O[y])
+        for t in range(M):
+            if t == 0:
+                prob = O[:, rhyme] / sum(O[:, rhyme])
+                y = np.random.choice(range(self.L), p=prob)
+                x = rhyme
+            else:
+                y = np.random.choice(range(self.L), p=A[states[t-1]])
+                x = np.random.choice(range(self.D), p=O[y])
             states.append(y)
             emission.append(x)
 

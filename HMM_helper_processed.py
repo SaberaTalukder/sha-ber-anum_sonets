@@ -253,7 +253,7 @@ def sample_sentence_rhyme(hmm, obs_map, rhyme, n_words=100):
     # Sample and convert sentence.
     emission, states = hmm.generate_emission_rhyme(n_words, rhyme)
     sentence = [obs_map_r[i] for i in emission]
-
+    sentence.reverse()
     return ' '.join(sentence).capitalize() + '...'
 
 ####################
