@@ -15,7 +15,7 @@ def pos_vis(hmm, obs_map, title=None):
     label_matrix = np.zeros((len(pos),len(pos_voc)))
     label_matrix[range(len(pos)),list(map(lambda p : pos2idx[p], pos))] = 1
 
-    states_pos = np.array(hmms[0].O) @ label_matrix
+    states_pos = np.array(hmm.O) @ label_matrix
 
     #plt.figure(figsize=(8,3))
     plt.imshow(states_pos)
