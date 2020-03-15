@@ -2,6 +2,7 @@
 # CS/CNS/EE 155 2020
 ########################################
 
+import copy
 import re
 import numpy as np
 import matplotlib.pyplot as plt
@@ -220,6 +221,12 @@ def print_words(obs, obs_map):
     val_map = dict([(value, key) for key, value in obs_map.items()]) 
     for el in obs:
         print(val_map[el])
+        
+def backward_obs(obs):
+    obs_backward = copy.deepcopy(obs)
+    for o in obs_backward:
+        o.reverse()
+    return obs_backward
 
 def obs_map_reverser(obs_map):
     obs_map_r = {}
