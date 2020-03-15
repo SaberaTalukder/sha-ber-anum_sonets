@@ -388,6 +388,7 @@ class HiddenMarkovModel:
         # Sample Hidden States
         A = np.array(self.A)
         O = np.array(self.O)
+
         states.append(np.random.choice(self.L,p=self.A_start))
         for i in range(1,M):
             states.append(np.random.choice(self.L,p=A[states[i-1],:]))
@@ -396,6 +397,34 @@ class HiddenMarkovModel:
 
         for y in states:
             emission.append(np.random.choice(self.D,p=O[states[i-1],:]))
+
+        return emission, states
+    
+    def generate_emission_rhyme(self, M, rhyme):
+        '''
+        Generates an emission of length M, assuming that the starting state
+        is chosen uniformly at random. 
+
+        Arguments:
+            M:          Length of the emission to generate.
+
+        Returns:
+            emission:   The randomly generated emission as a list.
+
+            states:     The randomly generated states as a list.
+        '''
+
+        emission = []
+        states = []
+        A = np.array(self.A)
+        O = np.array(self.O)
+        y = np.random.choice(range(self.L), O[:, rhyme])
+        x = rhyme
+        for t in range(1, M):
+            y = np.random.choice(range(self.L), p=A[states[t-1]])
+            x = np.random.choice(range(self.D), p=O[y])
+            states.append(y)
+            emission.append(x)
 
         return emission, states
 
